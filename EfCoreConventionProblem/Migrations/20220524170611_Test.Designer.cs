@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfCoreConventionProblem.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20220524165742_Test")]
+    [Migration("20220524170611_Test")]
     partial class Test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,37 +53,16 @@ namespace EfCoreConventionProblem.Migrations
                             b1.Property<Guid>("MainEntityId")
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.Property<decimal>("Number")
+                                .HasPrecision(16, 2)
+                                .HasColumnType("decimal(16,2)");
+
                             b1.HasKey("MainEntityId");
 
                             b1.ToTable("MainEntities");
 
                             b1.WithOwner()
                                 .HasForeignKey("MainEntityId");
-
-                            b1.OwnsMany("EfCoreConventionProblem.SecondLevelOwnedEntity", "SecondLevelOwnedEntities", b2 =>
-                                {
-                                    b2.Property<Guid>("OwnedEntityMainEntityId")
-                                        .HasColumnType("uniqueidentifier");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("int");
-
-                                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"), 1L, 1);
-
-                                    b2.Property<decimal>("Number")
-                                        .HasPrecision(16, 2)
-                                        .HasColumnType("decimal(16,2)");
-
-                                    b2.HasKey("OwnedEntityMainEntityId", "Id");
-
-                                    b2.ToTable("MainEntities_SecondLevelOwnedEntities");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("OwnedEntityMainEntityId");
-                                });
-
-                            b1.Navigation("SecondLevelOwnedEntities");
                         });
 
                     b.Navigation("OwnedEntity")
@@ -92,25 +71,30 @@ namespace EfCoreConventionProblem.Migrations
 
             modelBuilder.Entity("EfCoreConventionProblem.OtherEntity", b =>
                 {
-                    b.OwnsOne("EfCoreConventionProblem.SecondLevelOwnedEntity", "SecondLevelOwnedEntity", b1 =>
+                    b.OwnsMany("EfCoreConventionProblem.OwnedEntity", "OwnedEntities", b1 =>
                         {
                             b1.Property<Guid>("OtherEntityId")
                                 .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
 
                             b1.Property<decimal>("Number")
                                 .HasPrecision(16, 4)
                                 .HasColumnType("decimal(16,4)");
 
-                            b1.HasKey("OtherEntityId");
+                            b1.HasKey("OtherEntityId", "Id");
 
-                            b1.ToTable("OtherEntities");
+                            b1.ToTable("OtherEntities_OwnedEntities");
 
                             b1.WithOwner()
                                 .HasForeignKey("OtherEntityId");
                         });
 
-                    b.Navigation("SecondLevelOwnedEntity")
-                        .IsRequired();
+                    b.Navigation("OwnedEntities");
                 });
 #pragma warning restore 612, 618
         }

@@ -23,18 +23,15 @@ public class TestDbContext : DbContext
         {
             mainEntityBuilder.OwnsOne(x => x.OwnedEntity, ownedEntityBuilder =>
             {
-                ownedEntityBuilder.OwnsMany(x => x.SecondLevelOwnedEntities, secondLevelBuilder =>
-                {
-                    secondLevelBuilder.Property(x => x.Number).HasPrecision(16, 4);
-                });
+                ownedEntityBuilder.Property(x => x.Number).HasPrecision(16, 4);
             });
         });
 
         modelBuilder.Entity<OtherEntity>(otherEntityBuilder =>
         {
-            otherEntityBuilder.OwnsOne(x => x.SecondLevelOwnedEntity, secondLevelBuilder =>
+            otherEntityBuilder.OwnsMany(x => x.OwnedEntities, ownedEntitiesBuilder =>
             {
-                secondLevelBuilder.Property(x => x.Number).HasPrecision(16, 4);
+                ownedEntitiesBuilder.Property(x => x.Number).HasPrecision(16, 4);
             });
         });
     }

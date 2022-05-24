@@ -13,7 +13,8 @@ namespace EfCoreConventionProblem.Migrations
                 name: "MainEntities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnedEntity_Number = table.Column<decimal>(type: "decimal(16,2)", precision: 16, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,8 +25,7 @@ namespace EfCoreConventionProblem.Migrations
                 name: "OtherEntities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SecondLevelOwnedEntity_Number = table.Column<decimal>(type: "decimal(16,4)", precision: 16, scale: 4, nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,21 +33,21 @@ namespace EfCoreConventionProblem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MainEntities_SecondLevelOwnedEntities",
+                name: "OtherEntities_OwnedEntities",
                 columns: table => new
                 {
-                    OwnedEntityMainEntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OtherEntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<decimal>(type: "decimal(16,2)", precision: 16, scale: 2, nullable: false)
+                    Number = table.Column<decimal>(type: "decimal(16,4)", precision: 16, scale: 4, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MainEntities_SecondLevelOwnedEntities", x => new { x.OwnedEntityMainEntityId, x.Id });
+                    table.PrimaryKey("PK_OtherEntities_OwnedEntities", x => new { x.OtherEntityId, x.Id });
                     table.ForeignKey(
-                        name: "FK_MainEntities_SecondLevelOwnedEntities_MainEntities_OwnedEntityMainEntityId",
-                        column: x => x.OwnedEntityMainEntityId,
-                        principalTable: "MainEntities",
+                        name: "FK_OtherEntities_OwnedEntities_OtherEntities_OtherEntityId",
+                        column: x => x.OtherEntityId,
+                        principalTable: "OtherEntities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -56,13 +56,13 @@ namespace EfCoreConventionProblem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MainEntities_SecondLevelOwnedEntities");
+                name: "MainEntities");
+
+            migrationBuilder.DropTable(
+                name: "OtherEntities_OwnedEntities");
 
             migrationBuilder.DropTable(
                 name: "OtherEntities");
-
-            migrationBuilder.DropTable(
-                name: "MainEntities");
         }
     }
 }
